@@ -14,7 +14,7 @@
             "destination": "/api/favicon.ico"
         },
         {
-            "source": "/(.*)",
+            "source": "/^(?!.*(robots.txt|favicon.ico)).*",
             "destination": "/api/index.php"
         }
     ]

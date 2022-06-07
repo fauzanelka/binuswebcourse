@@ -3,28 +3,26 @@
         "api/index.php": {
             "runtime": "vercel-php@0.5.1"
         },
-        "api/robots.txt": {
-            "runtime": "@vercel/static"
-        },
-        "api/favicon.ico": {
-            "runtime": "@vercel/static"
-        },
-        "api/assets/**/*": {
-            "runtime": "@vercel/static"
+        "api/assets.php": {
+            "runtime": "vercel-php@0.5.1"
         }
     },
     "rewrites": [
         {
-            "source": "/assets/:path*",
-            "destination": "/api/assets/:path*"
+            "source": "/assets/css/:path*",
+            "destination": "/api/assets.php?type=css&file=:path*"
+        },
+        {
+            "source": "/assets/js/:path*",
+            "destination": "/api/assets.php?type=js&file=:path*"
         },
         {
             "source": "/robots.txt",
-            "destination": "/api/robots.txt"
+            "destination": "/api/assets.php?file=robots.txt"
         },
         {
             "source": "/favicon.ico",
-            "destination": "/api/favicon.ico"
+            "destination": "/api/assets.php?file=favicon.ico"
         },
         {
             "source": "/(.*)",

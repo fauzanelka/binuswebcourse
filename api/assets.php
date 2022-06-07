@@ -5,7 +5,7 @@
  * Manually route assets to be found
  */
 
-if ($_GET('file') === 'robots.txt') {
+if ($_GET['file'] === 'robots.txt') {
     header('Content-type: text/plain');
     echo require __DIR__ . '/robots.txt';
 } else if ($_GET['file'] === 'favicon.ico') {

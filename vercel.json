@@ -2,9 +2,22 @@
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.5.1"
+        },
+        "api/robots.txt": {
+            "runtime": "@vercel/static"
+        },
+        "api/favicon.ico": {
+            "runtime": "@vercel/static"
+        },
+        "api/public/**/*": {
+            "runtime": "@vercel/static"
         }
     },
     "rewrites": [
+        {
+            "source": "/assets/:path*",
+            "destination": "/api/assets/:path*"
+        },
         {
             "source": "/robots.txt",
             "destination": "/api/robots.txt"
@@ -14,7 +27,7 @@
             "destination": "/api/favicon.ico"
         },
         {
-            "source": "/((?!robots.txt|favicon.ico).*)",
+            "source": "/(.*)",
             "destination": "/api/index.php"
         }
     ]

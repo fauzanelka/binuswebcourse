@@ -23,7 +23,7 @@ Route::get('/favicon.ico', function () {
         abort(404);
     }
 
-    return File::get($fileName);
+    return response()->file($fileName);
 });
 
 Route::get('/robots.txt', function () {
@@ -32,7 +32,7 @@ Route::get('/robots.txt', function () {
         abort(404);
     }
 
-    return File::get($fileName);
+    return response()->file($fileName);
 });
 
 Route::get('/assets/{path}', function ($path) {
@@ -41,7 +41,7 @@ Route::get('/assets/{path}', function ($path) {
         abort(404);
     }
 
-    return File::get($fileName);
+    return response()->file($fileName);
 });
 
 Route::get('/hello', function () {

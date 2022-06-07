@@ -9,7 +9,7 @@
         "api/favicon.ico": {
             "runtime": "@vercel/static"
         },
-        "api/public/**/*": {
+        "api/assets/**/*": {
             "runtime": "@vercel/static"
         }
     },

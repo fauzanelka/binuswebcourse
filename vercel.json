@@ -6,16 +6,16 @@
     },
     "rewrites": [
         {
-            "source": "/(.*)",
-            "destination": "/api/index.php"
-        },
-        {
             "source": "/robots.txt",
             "destination": "/api/robots.txt"
         },
         {
             "source": "/favicon.ico",
             "destination": "/api/favicon.ico"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/api/index.php"
         }
     ]
 }

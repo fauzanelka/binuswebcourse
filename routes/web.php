@@ -47,3 +47,15 @@ Route::get('/assets/{path}', function ($path) {
 Route::get('/hello', function () {
     return 'You are viewing Laravel app deployed in Vercel!';
 });
+
+Route::name('module.')->prefix('module')->group(function () {
+    Route::name('personal')->prefix('personal')->group(function () {
+        Route::get('/{id}', 'PersonalAssignmentController@index');
+        Route::post('/{id}', 'PersonalAssignmentController@submit');
+    });
+
+    Route::name('team')->prefix('team')->group(function () {
+        Route::post('/{id}', 'TeamAssignmentController@index');
+        Route::get('/{id}', 'TeamAssignmentController@index');
+    });
+});

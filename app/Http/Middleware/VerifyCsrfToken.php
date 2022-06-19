@@ -11,9 +11,5 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array<int, string>
      */
-    protected $except = [
-        'https://binuswebcourse-fauzanelka.vercel.app',
-        'https://binuswebcourse-git-main-fauzanelka.vercel.app/',
-        'https://binuswebcourse.vercel.app/',
-    ];
+    protected $except = [];
 }

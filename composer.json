@@ -47,7 +47,7 @@
         ],
         "vercel": [
             "touch /tmp/database.db",
-            "@php artisan migrate"
+            "@php artisan migrate --force"
         ]
     },
     "extra": {

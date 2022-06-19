@@ -44,10 +44,6 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
-        ],
-        "vercel": [
-            "touch /tmp/database.db",
-            "@php artisan migrate --force"
         ]
     },
     "extra": {

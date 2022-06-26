@@ -94,6 +94,8 @@ class TeamAssignmentController extends Controller
             'dateOfBirth' => ['required', 'date'],
         ]);
 
+        $validated['password'] = bcrypt($validated['password']);
+
         User::create($validated);
 
         return response()->json(['message' => 'success']);

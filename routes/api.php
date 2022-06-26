@@ -18,6 +18,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/hello', function () {
+    return 'Test';
+});
+
 Route::group([
     'prefix' => 'module',
     'namespace' => 'App\\Http\\Controllers\\API',

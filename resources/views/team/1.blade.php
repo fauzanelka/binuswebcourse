@@ -35,7 +35,8 @@
                                     aria-controls="users-tab-pane" aria-selected="false">User List</button>
                             </li>
                             <li class="nav-item ms-auto">
-                                <a class="btn btn-sm btn-secondary" title="Logout" href="/auth/logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+                                <a class="btn btn-sm btn-secondary" title="Logout" href="/auth/logout"><i
+                                        class="fa-solid fa-right-from-bracket"></i></a>
                             </li>
                         </ul>
                         <div class="tab-content p-3" id="myTabContent">
@@ -232,7 +233,7 @@
             if (day.length < 2)
                 day = '0' + day;
 
-            return [year, month, day].join('/');
+            return [year, month, day].join('-');
         }
 
         function viewImage(imageUrl) {
@@ -241,40 +242,221 @@
             });
         }
 
-        const Toast = Swal.mixin({
+        var Toast = Swal.mixin({
             toast: true,
             position: 'top',
             showConfirmButton: false,
             timer: 3000
         });
 
-        function editProduct(id) {
-            const productModal = $("#productModal");
-            $("#productModalLabel").text("Edit Product");
-            productModal.on('hidden.bs.modal', function(event) {
-                $("#productModalLabel").text("Add Product");
+        function editProduct(el) {
+            var productModal = $("#productModal");
+            productModal.one('show.bs.modal', function(event) {
+                var tr = $(el).closest("tr");
+                var selectedProduct = $('#table-products').DataTable().row(tr).data();
+
+                $("#productForm").find("input").val(function(index, value) {
+                    return selectedProduct[this.name];
+                });
+                $(`#productForm textarea[name="description"]`).val(selectedProduct['description']);
+
+                $("#productModalLabel").text("Edit Product");
+                $(`#productForm button[type="submit"]`).text("Save");
+
+                $("#productForm").removeData("validator");
+                $("#productForm").off(".validate");
+                $("#productForm").validate({
+                    rules: {
+                        name: {
+                            required: true,
+                            minlength: 3,
+                        },
+                        description: {
+                            required: true,
+                            minlength: 3,
+                        },
+                        buy_price: {
+                            required: true,
+                            number: true,
+                            min: 1,
+                        },
+                        sell_price: {
+                            required: true,
+                            number: true,
+                            min: 1,
+                        },
+                        image: {
+                            required: false,
+                            accept: "image/*"
+                        }
+                    },
+                    highlight: function(input) {
+                        $(input).addClass('is-invalid');
+                    },
+                    unhighlight: function(input) {
+                        $(input).removeClass('is-invalid');
+                    },
+                    errorPlacement: function(error, element) {
+                        $(element).next().append(error);
+                    },
+                    submitHandler: function(form) {
+                        var formData = new FormData(form);
+                        formData.append("_method", "PATCH");
+                        $.ajax({
+                            type: "POST",
+                            url: `/rest/module/team/1/products/${selectedProduct['id']}`,
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            beforeSend: function(xhr) {
+                                $("#productForm button[type=submit]").prop(
+                                    "disabled", true);
+                                $("#productForm button[type=submit]").html(`
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...
+                                    `);
+                            },
+                            success: function() {
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'Product updated'
+                                });
+                                $('#table-products')
+                                    .DataTable().ajax
+                                    .reload();
+                            },
+                            error: function() {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'Failed'
+                                });
+                            },
+                            complete: function() {
+                                $("#productForm button[type=submit]")
+                                    .prop("disabled",
+                                        false);
+                                $("#productForm button[type=submit]")
+                                    .html(`Save`);
+                            }
+                        })
+                    }
+                });
             });
+            productModal.one('hidden.bs.modal', function(event) {
+                $("#productModalLabel").text("Add Product");
+                $(`#productForm button[type="submit"]`).text("Submit");
+                $('#productForm').trigger('reset');
+                $('#productForm .form-control').each(function() {
+                    $(this).removeClass('is-invalid');
+                });
+            });
+
             (new bootstrap.Modal(productModal)).show();
         }
 
-        function editUser(id) {
-            console.log(this);
-            console.log($("#table-products").DataTable().row(this).data());
-            const userModal = $("#userModal");
-            $("#userModalLabel").text("Edit User");
-            $("#userModalSubmit").text("Save");
-            userModal.on('show.bs.modal', function(event) {
+        function editUser(el) {
+            var userModal = $("#userModal");
+            userModal.one('show.bs.modal', function(event) {
+                var tr = $(el).closest("tr");
+                var selectedUser = $('#table-users').DataTable().row(tr).data();
 
+                $("#userForm").find("input").val(function(index, value) {
+                    return selectedUser[this.name];
+                });
+
+                $("#userModalLabel").text("Edit User");
+                $(`#userForm button[type="submit"]`).text("Save");
+                $(`#userForm input[name="email"]`).prop("disabled", true);
+                $(`#userForm input[name="email"]`).closest("div").hide();
+                $(`#userForm input[name="password"]`).prop("disabled", true);
+                $(`#userForm input[name="password_confirmation"]`).prop("disabled", true);
+                $(`#userForm input[name="password"]`).closest("div.row").hide();
+
+                $("#userForm").removeData("validator");
+                $("#userForm").off(".validate");
+                $("#userForm").validate({
+                    rules: {
+                        name: {
+                            required: true,
+                            minlength: 3,
+                        },
+                        gender: {
+                            required: true,
+                        },
+                        placeOfBirth: {
+                            required: true,
+                            minlength: 3
+                        },
+                        dateOfBirth: {
+                            required: true,
+                            dateISO: true,
+                        }
+                    },
+                    highlight: function(input) {
+                        $(input).addClass('is-invalid');
+                    },
+                    unhighlight: function(input) {
+                        $(input).removeClass('is-invalid');
+                    },
+                    errorPlacement: function(error, element) {
+                        $(element).next().append(error);
+                    },
+                    submitHandler: function(form) {
+                        $.ajax({
+                            type: "PATCH",
+                            url: `/rest/module/team/1/users/${selectedUser['id']}`,
+                            data: $(form).serialize(),
+                            beforeSend: function(xhr) {
+                                $("#userForm button[type=submit]").prop(
+                                    "disabled", true);
+                                $("#userForm button[type=submit]").html(`
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...
+                                    `);
+                            },
+                            success: function() {
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'User updated'
+                                });
+                                $('#table-users')
+                                    .DataTable().ajax
+                                    .reload();
+                            },
+                            error: function() {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'Failed'
+                                });
+                            },
+                            complete: function() {
+                                $("#userForm button[type=submit]")
+                                    .prop("disabled",
+                                        false);
+                                $("#userForm button[type=submit]")
+                                    .html(`Save`);
+                            }
+                        })
+                    }
+                });
             });
-            userModal.on('hidden.bs.modal', function(event) {
+            userModal.one('hidden.bs.modal', function(event) {
                 $("#userModalLabel").text("Add User");
-                $("#userModalSubmit").text("Submit");
+                $(`#userForm button[type="submit"]`).text("Submit");
+                $(`#userForm input[name="email"]`).removeAttr("disabled");
+                $(`#userForm input[name="email"]`).closest("div").show();
+                $(`#userForm input[name="password"]`).removeAttr("disabled");
+                $(`#userForm input[name="password_confirmation"]`).removeAttr("disabled");
+                $(`#userForm input[name="password"]`).closest("div.row").show();
+                $('#userForm').trigger('reset');
+                $('#userForm .form-control').each(function() {
+                    $(this).removeClass('is-invalid');
+                });
             });
+
             (new bootstrap.Modal(userModal)).show();
         }
 
         function deleteProduct(id) {
-            const sendDeleteRequest = function(id) {
+            var sendDeleteRequest = function(id) {
                 $.ajax({
                     type: 'DELETE',
                     url: `/rest/module/team/1/products/${id}`,
@@ -317,7 +499,7 @@
         }
 
         function deleteUser(id) {
-            const sendDeleteRequest = function(id) {
+            var sendDeleteRequest = function(id) {
                 $.ajax({
                     type: 'DELETE',
                     url: `/rest/module/team/1/users/${id}`,
@@ -366,6 +548,16 @@
                 ordering: false,
             });
 
+            $("#productForm").submit(function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+
+            $("#userForm").submit(function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+
             $('#table-products').DataTable({
                 serverSide: true,
                 stateSave: true,
@@ -376,84 +568,106 @@
                         titleAttr: 'Add a new product',
                         className: 'btn btn-success',
                         action: function(e, dt, node, config) {
-                            (new bootstrap.Modal($("#productModal"))).show();
+                            var productModal = $("#productModal");
 
-                            $("#productForm").submit(function(event) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                            });
-
-                            $("#productForm").validate({
-                                rules: {
-                                    name: {
-                                        required: true,
-                                        minlength: 3,
+                            productModal.one('show.bs.modal', function(event) {
+                                $("#productForm").removeData("validator");
+                                $("#productForm").off(".validate");
+                                $("#productForm").validate({
+                                    rules: {
+                                        name: {
+                                            required: true,
+                                            minlength: 3,
+                                        },
+                                        description: {
+                                            required: true,
+                                            minlength: 3,
+                                        },
+                                        buy_price: {
+                                            required: true,
+                                            number: true,
+                                            min: 1,
+                                        },
+                                        sell_price: {
+                                            required: true,
+                                            number: true,
+                                            min: 1,
+                                        },
+                                        image: {
+                                            required: true,
+                                            accept: "image/*"
+                                        }
                                     },
-                                    description: {
-                                        required: true,
-                                        minlength: 3,
+                                    highlight: function(input) {
+                                        $(input).addClass('is-invalid');
                                     },
-                                    buy_price: {
-                                        required: true,
-                                        number: true,
-                                        min: 1,
+                                    unhighlight: function(input) {
+                                        $(input).removeClass('is-invalid');
                                     },
-                                    sell_price: {
-                                        required: true,
-                                        number: true,
-                                        min: 1,
+                                    errorPlacement: function(error, element) {
+                                        $(element).next().append(error);
                                     },
-                                    image: {
-                                        required: true,
-                                        accept: "image/*"
-                                    }
-                                },
-                                highlight: function(input) {
-                                    $(input).addClass('is-invalid');
-                                },
-                                unhighlight: function(input) {
-                                    $(input).removeClass('is-invalid');
-                                },
-                                errorPlacement: function(error, element) {
-                                    $(element).next().append(error);
-                                },
-                                submitHandler: function(form) {
-                                    $("#productForm button[type=submit]").prop(
-                                        "disabled", true);
-                                    $("#productForm button[type=submit]").html(`
+                                    submitHandler: function(form) {
+                                        var formData = new FormData(form);
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/rest/module/team/1/products",
+                                            data: formData,
+                                            processData: false,
+                                            contentType: false,
+                                            beforeSend: function(
+                                                xhr) {
+                                                $("#productForm button[type=submit]")
+                                                    .prop(
+                                                        "disabled",
+                                                        true);
+                                                $("#productForm button[type=submit]")
+                                                    .html(`
                                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...
                                     `);
-                                    const formData = new FormData(form);
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "/rest/module/team/1/products",
-                                        data: formData,
-                                        processData: false,
-                                        contentType: false,
-                                        success: function() {
-                                            Toast.fire({
-                                                icon: 'success',
-                                                title: 'Product added'
-                                            });
-                                            $("#productForm").trigger(
-                                                "reset");
-                                        },
-                                        error: function() {
-                                            Toast.fire({
-                                                icon: 'error',
-                                                title: 'Failed'
-                                            });
-                                        },
-                                        complete: function() {
-                                            $("#productForm button[type=submit]")
-                                                .prop("disabled",
-                                                    false);
-                                            $("#productForm button[type=submit]")
-                                                .html(`Submit`);
-                                        }
-                                    })
-                                }
+                                            },
+                                            success: function() {
+                                                Toast.fire({
+                                                    icon: 'success',
+                                                    title: 'Product added'
+                                                });
+                                                $("#productForm")
+                                                    .trigger(
+                                                        "reset"
+                                                        );
+                                                $('#table-products')
+                                                    .DataTable()
+                                                    .ajax
+                                                    .reload();
+                                            },
+                                            error: function() {
+                                                Toast.fire({
+                                                    icon: 'error',
+                                                    title: 'Failed'
+                                                });
+                                            },
+                                            complete: function() {
+                                                $("#productForm button[type=submit]")
+                                                    .prop(
+                                                        "disabled",
+                                                        false);
+                                                $("#productForm button[type=submit]")
+                                                    .html(
+                                                        `Submit`
+                                                        );
+                                            }
+                                        })
+                                    }
+                                });
                             });
+
+                            productModal.one('hidden.bs.modal', function(event) {
+                                $('#productForm .form-control').each(function() {
+                                    $(this).removeClass('is-invalid');
+                                });
+                            });
+
+                            (new bootstrap.Modal(productModal)).show();
                         }
                     }],
                     dom: {
@@ -464,36 +678,9 @@
                 },
                 ajax: {
                     url: '/rest/module/team/1/products',
-                    dataSrc: function(json) {
-                        const data = [];
-                        json.data.forEach(item => {
-                            data.push({
-                                id: item.id,
-                                name: item.name,
-                                sell_price: `Rp${(new Intl.NumberFormat('id-ID')).format(item.sell_price)}`,
-                                buy_price: `Rp${(new Intl.NumberFormat('id-ID')).format(item.buy_price)}`,
-                                image_url: `
-                                    <button type="button" onclick="viewImage('${item.image_url}')" title="View" class="btn btn-sm btn-success">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                `,
-                                actions: `
-                                    <div class="d-block">
-                                        <button type="button" onclick="editProduct(${item.id})" title="Edit" class="btn btn-sm btn-primary">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button type="button" onclick="deleteProduct(${item.id})" title="Delete" class="btn btn-sm btn-danger">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </div>
-                                `
-                            });
-                        });
-
-                        return data;
-                    },
+                    dataSrc: 'data',
                     dataFilter: function(rawJson) {
-                        const json = $.parseJSON(rawJson);
+                        var json = $.parseJSON(rawJson);
                         return JSON.stringify({
                             recordsTotal: json.meta.total,
                             recordsFiltered: json.meta.total,
@@ -501,7 +688,7 @@
                         });
                     },
                     data: function(data) {
-                        const payload = {
+                        var payload = {
                             page: Math.floor(data.start / data.length) + 1,
                             limit: data.length,
                         };
@@ -515,16 +702,41 @@
                         data: 'name'
                     },
                     {
-                        data: 'buy_price'
+                        data: 'buy_price',
+                        render: function(data, type, row, meta) {
+                            return `Rp${(new Intl.NumberFormat('id-ID')).format(data)}`;
+                        }
                     },
                     {
-                        data: 'sell_price'
+                        data: 'sell_price',
+                        render: function(data, type, row, meta) {
+                            return `Rp${(new Intl.NumberFormat('id-ID')).format(data)}`;
+                        }
                     },
                     {
-                        data: 'image_url'
+                        data: 'image_url',
+                        render: function(data, type, row, meta) {
+                            return `
+                                    <button type="button" onclick="viewImage('${data}')" title="View" class="btn btn-sm btn-success">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                `;
+                        }
                     },
                     {
-                        data: 'actions'
+                        data: 'actions',
+                        render: function(data, type, row, meta) {
+                            return `
+                                    <div class="d-block">
+                                        <button type="button" onclick="editProduct(this)" title="Edit" class="btn btn-sm btn-primary">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button type="button" onclick="deleteProduct(${row.id})" title="Delete" class="btn btn-sm btn-danger">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                `;
+                        }
                     }
                 ]
             });
@@ -539,86 +751,110 @@
                         titleAttr: 'Add a new user',
                         className: 'btn btn-success',
                         action: function(e, dt, node, config) {
-                            (new bootstrap.Modal($("#userModal"))).show();
+                            var userModal = $("#userModal");
 
-                            $("#userForm").submit(function(event) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                            });
-
-                            $("#userForm").validate({
-                                rules: {
-                                    email: {
-                                        required: true,
-                                        email: true,
-                                    },
-                                    name: {
-                                        required: true,
-                                        minlength: 3,
-                                    },
-                                    password: {
-                                        required: true,
-                                        minlength: 3,
-                                    },
-                                    password_confirmation: {
-                                        required: true,
-                                        equalTo: `#userForm input[name="password"]`
-                                    },
-                                    gender: {
-                                        required: true,
-                                    },
-                                    placeOfBirth: {
-                                        required: true,
-                                        minlength: 3
-                                    },
-                                    dateOfBirth: {
-                                        required: true,
-                                        dateISO: true,
-                                    }
-                                },
-                                highlight: function(input) {
-                                    $(input).addClass('is-invalid');
-                                },
-                                unhighlight: function(input) {
-                                    $(input).removeClass('is-invalid');
-                                },
-                                errorPlacement: function(error, element) {
-                                    $(element).next().append(error);
-                                },
-                                submitHandler: function(form) {
-                                    $("#userForm button[type=submit]").prop(
-                                        "disabled", true);
-                                    $("#userForm button[type=submit]").html(`
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...
-                                    `);
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "/rest/module/team/1/users",
-                                        data: $(form).serialize(),
-                                        success: function() {
-                                            Toast.fire({
-                                                icon: 'success',
-                                                title: 'User added'
-                                            });
-                                            $("#userForm").trigger(
-                                                "reset");
+                            userModal.one('show.bs.modal', function(event) {
+                                $("#userForm").removeData("validator");
+                                $("#userForm").off(".validate");
+                                $("#userForm").validate({
+                                    rules: {
+                                        email: {
+                                            required: true,
+                                            email: true,
                                         },
-                                        error: function() {
-                                            Toast.fire({
-                                                icon: 'error',
-                                                title: 'Failed'
-                                            });
+                                        name: {
+                                            required: true,
+                                            minlength: 3,
                                         },
-                                        complete: function() {
-                                            $("#userForm button[type=submit]")
-                                                .prop("disabled",
-                                                    false);
-                                            $("#userForm button[type=submit]")
-                                                .html(`Submit`);
+                                        password: {
+                                            required: true,
+                                            minlength: 3,
+                                        },
+                                        password_confirmation: {
+                                            required: true,
+                                            equalTo: `#userForm input[name="password"]`
+                                        },
+                                        gender: {
+                                            required: true,
+                                        },
+                                        placeOfBirth: {
+                                            required: true,
+                                            minlength: 3
+                                        },
+                                        dateOfBirth: {
+                                            required: true,
+                                            dateISO: true,
                                         }
-                                    })
-                                }
+                                    },
+                                    highlight: function(input) {
+                                        $(input).addClass('is-invalid');
+                                    },
+                                    unhighlight: function(input) {
+                                        $(input).removeClass('is-invalid');
+                                    },
+                                    errorPlacement: function(error, element) {
+                                        $(element).next().append(error);
+                                    },
+                                    submitHandler: function(form) {
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/rest/module/team/1/users",
+                                            data: $(form)
+                                                .serialize(),
+                                            beforeSend: function(
+                                                xhr) {
+                                                $("#userForm button[type=submit]")
+                                                    .prop(
+                                                        "disabled",
+                                                        true);
+                                                $("#userForm button[type=submit]")
+                                                    .html(`
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...
+                                        `);
+                                            },
+                                            success: function() {
+                                                Toast.fire({
+                                                    icon: 'success',
+                                                    title: 'User added'
+                                                });
+                                                $("#userForm")
+                                                    .trigger(
+                                                        "reset"
+                                                    );
+                                                $('#table-users')
+                                                    .DataTable()
+                                                    .ajax
+                                                    .reload();
+                                            },
+                                            error: function() {
+                                                Toast.fire({
+                                                    icon: 'error',
+                                                    title: 'Failed'
+                                                });
+                                            },
+                                            complete: function() {
+                                                $("#userForm button[type=submit]")
+                                                    .prop(
+                                                        "disabled",
+                                                        false);
+                                                $("#userForm button[type=submit]")
+                                                    .html(
+                                                        `Submit`
+                                                    );
+                                            }
+                                        })
+                                    }
+                                });
                             });
+
+                            userModal.one('hidden.bs.modal', function(event) {
+                                $('#userForm .form-control').each(function() {
+                                    $(this).removeClass('is-invalid');
+                                });
+                            });
+
+                            (new bootstrap.Modal(userModal)).show();
+
                         }
                     }],
                     dom: {
@@ -629,33 +865,9 @@
                 },
                 ajax: {
                     url: '/rest/module/team/1/users',
-                    dataSrc: function(json) {
-                        const data = [];
-                        json.data.forEach(item => {
-                            data.push({
-                                id: item.id,
-                                email: item.email,
-                                name: item.name,
-                                gender: `${item.gender.substring(0,1).toUpperCase()}${item.gender.substring(1)}`,
-                                placeOfBirth: item.placeOfBirth,
-                                dateOfBirth: formatDate(new Date(item.dateOfBirth)),
-                                actions: `
-                                    <div class="d-block">
-                                        <button type="button" onclick="editUser(${item.id})" title="Edit" class="btn btn-sm btn-primary">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button type="button" onclick="deleteUser(${item.id})" title="Delete" class="btn btn-sm btn-danger">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </div>
-                                `
-                            });
-                        });
-
-                        return data;
-                    },
+                    dataSrc: 'data',
                     dataFilter: function(rawJson) {
-                        const json = $.parseJSON(rawJson);
+                        var json = $.parseJSON(rawJson);
                         return JSON.stringify({
                             recordsTotal: json.meta.total,
                             recordsFiltered: json.meta.total,
@@ -663,7 +875,7 @@
                         });
                     },
                     data: function(data) {
-                        const payload = {
+                        var payload = {
                             page: Math.floor(data.start / data.length) + 1,
                             limit: data.length,
                         };
@@ -680,7 +892,10 @@
                         data: 'name'
                     },
                     {
-                        data: 'gender'
+                        data: 'gender',
+                        render: function(data, type, row, meta) {
+                            return `${data.substring(0,1).toUpperCase()}${data.substring(1)}`;
+                        }
                     },
                     {
                         data: 'placeOfBirth'
@@ -689,7 +904,19 @@
                         data: 'dateOfBirth'
                     },
                     {
-                        data: 'actions'
+                        data: 'actions',
+                        render: function(data, type, row, meta) {
+                            return `
+                                    <div class="d-block">
+                                        <button type="button" onclick="editUser(this)" title="Edit" class="btn btn-sm btn-primary">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button type="button" onclick="deleteUser(${row.id})" title="Delete" class="btn btn-sm btn-danger">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                `;
+                        }
                     }
                 ]
             });

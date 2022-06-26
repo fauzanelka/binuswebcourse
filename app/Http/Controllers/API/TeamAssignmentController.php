@@ -63,14 +63,13 @@ class TeamAssignmentController extends Controller
             'image' => ['nullable', 'image'],
         ]);
 
-
         $product = Product::whereId($id)->first();
         if (array_key_exists('image', $validated)) {
             $imageFileName = $validated['image']->hashName();
 
             Storage::disk('tmp')->put(
                 $imageFileName,
-                $validated['image'],
+                File::get($validated['image']),
                 'public',
             );
 

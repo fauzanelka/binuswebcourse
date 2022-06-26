@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->unsignedBigInteger('price_buy');
-            $table->unsignedBigInteger('price_sell');
-            $table->string('image_path')->nullable();
+            $table->unsignedBigInteger('buy_price');
+            $table->unsignedBigInteger('sell_price');
+            $table->string('image_url')->nullable();
             $table->timestamps();
         });
     }

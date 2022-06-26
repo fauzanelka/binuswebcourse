@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Product;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use App\Http\Resources\TeamAssignment\ProductCollection;
 use App\Http\Resources\TeamAssignment\UserCollection;
 
@@ -25,7 +27,29 @@ class TeamAssignmentController extends Controller
 
     public function addProduct(Request $request)
     {
-        // Not implemented
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:3'],
+            'description' => ['required', 'string', 'min:3'],
+            'buy_price' => ['required', 'numeric', 'min:1'],
+            'sell_price' => ['required', 'numeric', 'min:1'],
+            'image' => ['required', 'image'],
+        ]);
+
+        if (array_key_exists('image', $validated)) {
+            $imageFileName = $validated['image']->hashName();
+
+            Storage::disk('tmp')->put(
+                $imageFileName,
+                File::get($validated['image']),
+                'public',
+            );
+
+            $validated['image_url'] = url("/assets/images/$imageFileName");
+            unset($validated['image']);
+        }
+
+        Product::create($validated);
+
         return response()->json(['message' => 'success']);
     }
 
@@ -42,11 +66,11 @@ class TeamAssignmentController extends Controller
 
         $product = Product::whereId($id)->first();
         if (array_key_exists('image', $validated)) {
-            $imageFileName = $validatedData['image']->hashName();
+            $imageFileName = $validated['image']->hashName();
 
             Storage::disk('tmp')->put(
                 $imageFileName,
-                $validatedData['image'],
+                $validated['image'],
                 'public',
             );
 
@@ -59,20 +83,18 @@ class TeamAssignmentController extends Controller
         return response()->json(['message' => 'success']);
     }
 
-    public function addUser(Request $request, string $id)
+    public function addUser(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['nullable', 'string'],
-            'password' => ['nullable', 'string'],
-            'gender' => ['nullable', 'in:male,female,other'],
-            'placeOfBirth' => ['nullable', 'string', 'min:3'],
-            'dateOfBirth' => ['nullable', 'date'],
+            'name' => ['required', 'string', 'min:3'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'confirmed', 'string', 'min:3'],
+            'gender' => ['required', 'in:male,female,other'],
+            'placeOfBirth' => ['required', 'string', 'min:3'],
+            'dateOfBirth' => ['required', 'date'],
         ]);
 
-
-        $user = User::whereId($id)->first();
-        $user->fill($validated);
-        $user->save();
+        User::create($validated);
 
         return response()->json(['message' => 'success']);
     }

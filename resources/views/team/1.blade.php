@@ -84,55 +84,44 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <form id="productForm" class="needs-validation" novalidate>
+                            <form id="productForm" novalidate>
                                 <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="name" class="form-label">Name</label>
                                         <input type="text" name="name" class="form-control">
-                                        <div class="invalid-feedback">
-                                            Please provide a valid name
-                                        </div>
+                                        <div class="invalid-feedback"></div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="description" class="form-label">Description</label>
-                                        <input type="textarea" name="description" class="form-control">
-                                        <div class="invalid-feedback">
-                                            Please provide a valid description
-                                        </div>
+                                        <textarea name="description" class="form-control"></textarea>
+                                        <div class="invalid-feedback"></div>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-6 col-md-12 pe-lg-1">
                                             <div class="mb-3">
-                                                <label for="buyPrice" class="form-label">Buy Price</label>
-                                                <input type="number" name="buyPrice" class="form-control">
-                                                <div class="invalid-feedback">
-                                                    Please provide a valid buy price
-                                                </div>
+                                                <label for="buy_price" class="form-label">Buy Price</label>
+                                                <input type="number" name="buy_price" class="form-control">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="col-lg-6 col-md-12 ps-lg-1">
                                             <div class="mb-3">
-                                                <label for="sellPrice" class="form-label">Sell Price</label>
-                                                <input type="number" name="sellPrice" class="form-control">
-                                                <div class="invalid-feedback">
-                                                    Please provide a valid sell price
-                                                </div>
+                                                <label for="sell_price" class="form-label">Sell Price</label>
+                                                <input type="number" name="sell_price" class="form-control">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="image" class="form-label">Image</label>
                                         <input type="file" name="image" class="form-control" accept="image/*">
-                                        <div class="invalid-feedback">
-                                            Please provide a valid image
-                                        </div>
+                                        <div class="invalid-feedback"></div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button id="userModalSubmit" type="button"
-                                        class="btn btn-primary">Submit</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
                             </form>
                         </div>
@@ -152,10 +141,30 @@
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email</label>
                                         <input type="email" name="email" class="form-control">
+                                        <div class="invalid-feedback"></div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="name" class="form-label">Name</label>
                                         <input type="text" name="name" class="form-control">
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-12 pe-lg-1">
+                                            <div class="mb-3">
+                                                <label for="password" class="form-label">Password</label>
+                                                <input type="password" name="password" class="form-control">
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-12 ps-lg-1">
+                                            <div class="mb-3">
+                                                <label for="password_confirmation" class="form-label">Confirm
+                                                    Password</label>
+                                                <input type="password" name="password_confirmation"
+                                                    class="form-control">
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="gender" class="form-label">Gender</label>
@@ -164,18 +173,21 @@
                                             <option value="female">Female</option>
                                             <option value="other">Other</option>
                                         </select>
+                                        <div class="invalid-feedback"></div>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-6 col-md-12 pe-lg-1">
                                             <div class="mb-3">
                                                 <label for="placeOfBirth" class="form-label">Place of Birth</label>
                                                 <input type="text" name="placeOfBirth" class="form-control">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                         <div class="col-lg-6 col-md-12 ps-lg-1">
                                             <div class="mb-3">
                                                 <label for="dateOfBirth" class="form-label">Date of Birth</label>
                                                 <input type="date" name="dateOfBirth" class="form-control">
+                                                <div class="invalid-feedback"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -183,8 +195,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button id="userModalSubmit" type="button"
-                                        class="btn btn-primary">Submit</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
                             </form>
                         </div>
@@ -196,11 +207,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"
         integrity="sha512-pax4MlgXjHEPfCwcJLQhigY7+N8rt6bVvWLFyUMuxShv170X53TRzGPmPkZmGBhk+jikR8WBM4yl7A9WMHHqvg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
-        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.12.1/b-2.2.3/datatables.min.js">
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.4/jquery.validate.min.js"
+        integrity="sha512-FOhq9HThdn7ltbK8abmGn60A/EMtEzIzv1rvuh+DqzJtSGq8BRdEN0U+j0iKEIffiw/yEtVuladk6rsG4X6Uqg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.4/additional-methods.min.js"
+        integrity="sha512-XJiEiB5jruAcBaVcXyaXtApKjtNie4aCBZ5nnFDIEFrhGIAvitoqQD6xd9ayp5mLODaCeaXfqQMeVs1ZfhKjRQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.4.18/sweetalert2.all.min.js"
         integrity="sha512-4+OQqM/O4AkUlCzcn4hcNN7nFwYTYiuMQlhPjdi0Vcpn2ALkrIStJZkxCNauh9WiY6Fkc0FbelhU13feOuX5/A=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -247,7 +261,7 @@
             const userModal = $("#userModal");
             $("#userModalLabel").text("Edit User");
             $("#userModalSubmit").text("Save");
-            userModal.on('show.bs.modal', function (event) {
+            userModal.on('show.bs.modal', function(event) {
 
             });
             userModal.on('hidden.bs.modal', function(event) {
@@ -255,9 +269,6 @@
                 $("#userModalSubmit").text("Submit");
             });
             (new bootstrap.Modal(userModal)).show();
-            $("#userForm").submit(function (evt) {
-
-            });
         }
 
         function deleteProduct(id) {
@@ -364,6 +375,83 @@
                         className: 'btn btn-success',
                         action: function(e, dt, node, config) {
                             (new bootstrap.Modal($("#productModal"))).show();
+
+                            $("#productForm").submit(function(event) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            });
+
+                            $("#productForm").validate({
+                                rules: {
+                                    name: {
+                                        required: true,
+                                        minlength: 3,
+                                    },
+                                    description: {
+                                        required: true,
+                                        minlength: 3,
+                                    },
+                                    buy_price: {
+                                        required: true,
+                                        number: true,
+                                        min: 1,
+                                    },
+                                    sell_price: {
+                                        required: true,
+                                        number: true,
+                                        min: 1,
+                                    },
+                                    image: {
+                                        required: true,
+                                        accept: "image/*"
+                                    }
+                                },
+                                highlight: function(input) {
+                                    $(input).addClass('is-invalid');
+                                },
+                                unhighlight: function(input) {
+                                    $(input).removeClass('is-invalid');
+                                },
+                                errorPlacement: function(error, element) {
+                                    $(element).next().append(error);
+                                },
+                                submitHandler: function(form) {
+                                    $("#productForm button[type=submit]").prop(
+                                        "disabled", true);
+                                    $("#productForm button[type=submit]").html(`
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...
+                                    `);
+                                    const formData = new FormData(form);
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/rest/module/team/1/products",
+                                        data: formData,
+                                        processData: false,
+                                        contentType: false,
+                                        success: function() {
+                                            Toast.fire({
+                                                icon: 'success',
+                                                title: 'Product added'
+                                            });
+                                            $("#productForm").trigger(
+                                                "reset");
+                                        },
+                                        error: function() {
+                                            Toast.fire({
+                                                icon: 'error',
+                                                title: 'Failed'
+                                            });
+                                        },
+                                        complete: function() {
+                                            $("#productForm button[type=submit]")
+                                                .prop("disabled",
+                                                    false);
+                                            $("#productForm button[type=submit]")
+                                                .html(`Submit`);
+                                        }
+                                    })
+                                }
+                            });
                         }
                     }],
                     dom: {
@@ -450,6 +538,85 @@
                         className: 'btn btn-success',
                         action: function(e, dt, node, config) {
                             (new bootstrap.Modal($("#userModal"))).show();
+
+                            $("#userForm").submit(function(event) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            });
+
+                            $("#userForm").validate({
+                                rules: {
+                                    email: {
+                                        required: true,
+                                        email: true,
+                                    },
+                                    name: {
+                                        required: true,
+                                        minlength: 3,
+                                    },
+                                    password: {
+                                        required: true,
+                                        minlength: 3,
+                                    },
+                                    password_confirmation: {
+                                        required: true,
+                                        equalTo: `#userForm input[name="password"]`
+                                    },
+                                    gender: {
+                                        required: true,
+                                    },
+                                    placeOfBirth: {
+                                        required: true,
+                                        minlength: 3
+                                    },
+                                    dateOfBirth: {
+                                        required: true,
+                                        dateISO: true,
+                                    }
+                                },
+                                highlight: function(input) {
+                                    $(input).addClass('is-invalid');
+                                },
+                                unhighlight: function(input) {
+                                    $(input).removeClass('is-invalid');
+                                },
+                                errorPlacement: function(error, element) {
+                                    $(element).next().append(error);
+                                },
+                                submitHandler: function(form) {
+                                    $("#userForm button[type=submit]").prop(
+                                        "disabled", true);
+                                    $("#userForm button[type=submit]").html(`
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...
+                                    `);
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/rest/module/team/1/users",
+                                        data: $(form).serialize(),
+                                        success: function() {
+                                            Toast.fire({
+                                                icon: 'success',
+                                                title: 'User added'
+                                            });
+                                            $("#userForm").trigger(
+                                                "reset");
+                                        },
+                                        error: function() {
+                                            Toast.fire({
+                                                icon: 'error',
+                                                title: 'Failed'
+                                            });
+                                        },
+                                        complete: function() {
+                                            $("#userForm button[type=submit]")
+                                                .prop("disabled",
+                                                    false);
+                                            $("#userForm button[type=submit]")
+                                                .html(`Submit`);
+                                        }
+                                    })
+                                }
+                            });
                         }
                     }],
                     dom: {

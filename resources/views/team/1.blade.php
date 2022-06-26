@@ -34,6 +34,8 @@
                                     data-bs-target="#users-tab-pane" type="button" role="tab"
                                     aria-controls="users-tab-pane" aria-selected="false">User List</button>
                             </li>
+                            <li class="nav-item ms-auto">
+                                <a class="btn btn-sm btn-secondary" title="Logout" href="/auth/logout"><i class="fa-solid fa-right-from-bracket"></i></a>
                             </li>
                         </ul>
                         <div class="tab-content p-3" id="myTabContent">

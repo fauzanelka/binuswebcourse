@@ -60,6 +60,7 @@ Route::get('/hello', function () {
 Route::prefix('auth')->group(function () {
     Route::get('/login', 'LoginController@index')->name('login');
     Route::post('/login', 'LoginController@authenticate');
+    Route::get('/logout', 'LoginController@logout');
 });
 
 Route::group([

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PersonalAssignment1;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class PersonalAssignmentController extends Controller
 {
@@ -45,7 +46,7 @@ class PersonalAssignmentController extends Controller
 
                     Storage::disk('tmp')->put(
                         $profilePictureFileName,
-                        $validatedData['profilePicture'],
+                        File::get($validatedData['profilePicture']),
                         'public',
                     );
 
@@ -60,7 +61,7 @@ class PersonalAssignmentController extends Controller
 
                     Storage::disk('tmp')->put(
                         $certificatesFileName,
-                        $validatedData['certificates'],
+                        File::get($validatedData['certificates']),
                         'public',
                     );
 
@@ -75,7 +76,7 @@ class PersonalAssignmentController extends Controller
 
                     Storage::disk('tmp')->put(
                         $resumeFileName,
-                        $validatedData['resume'],
+                        File::get($validatedData['resume']),
                         'public',
                     );
 

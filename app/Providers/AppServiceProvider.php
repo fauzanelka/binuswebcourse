@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (env('VERCEL_DEPLOY', FALSE)) {
+        if (env('MIGRATE_ON_STARTUP', FALSE)) {
             touch('/tmp/database.db');
             Artisan::call('migrate', ['--force' => true, '--seed' => true]);
         }

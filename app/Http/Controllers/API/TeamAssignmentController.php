@@ -104,7 +104,7 @@ class TeamAssignmentController extends Controller
 
     public function deleteUser(Request $request, string $id)
     {
-        User::whereId($id)->first()->delete();
+        User::whereNot('email', 'admin@binuswebcourse.vercel.app')->whereId($id)->first()->delete();
 
         return response('', 204);
     }

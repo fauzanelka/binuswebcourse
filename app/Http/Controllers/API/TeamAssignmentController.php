@@ -20,7 +20,7 @@ class TeamAssignmentController extends Controller
     public function users(Request $request)
     {
         $limit = $request->input('limit', 10);
-        return new UserCollection(User::paginate($limit));
+        return new UserCollection(User::whereNot('email', 'admin@binuswebcourse.vercel.app')->paginate($limit));
     }
 
     public function addProduct(Request $request)

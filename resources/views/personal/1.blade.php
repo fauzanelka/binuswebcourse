@@ -23,7 +23,7 @@
                 <div class="card mt-3">
                     <div class="card-header">Form TP1</div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('module.personal', ['id' => 1]) }}"
+                        <form method="POST" action="{{ url('/module/personal/1') }}"
                             class="needs-validation" enctype="multipart/form-data" novalidate>
                             @csrf
                             <div class="mb-3">

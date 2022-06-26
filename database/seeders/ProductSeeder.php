@@ -14,6 +14,8 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Product::factory(100)->create();
+        if (\App\Models\Product::all()->count() < 100) {
+            \App\Models\Product::factory(100)->create();
+        }
     }
 }

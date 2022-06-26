@@ -15,15 +15,20 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\User::factory()->create([
-            'name' => 'Admin',
-            'password' => bcrypt('admin'),
-            'email' => 'admin@binuswebcourse.vercel.app',
-            'gender' => 'male',
-            'placeOfBirth' => 'Jakarta',
-            'dateOfBirth' => Carbon::createFromDate('2000/07/02'),
-        ]);
+        if (!\App\Models\User::whereEmail('admin@binuswebcourse.vercel.app')->exists()) {
+            \App\Models\User::factory()->create([
+                'name' => 'Admin',
+                'password' => bcrypt('admin'),
+                'email' => 'admin@binuswebcourse.vercel.app',
+                'gender' => 'male',
+                'placeOfBirth' => 'Jakarta',
+                'dateOfBirth' => Carbon::createFromDate('2000/07/02'),
+            ]);
+        }
 
-        \App\Models\User::factory(100)->create();
+        if (\App\Models\User::all()->count() < 100) {
+            \App\Models\User::factory(100)->create();
+        }
+
     }
 }

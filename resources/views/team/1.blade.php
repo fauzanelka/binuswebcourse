@@ -358,6 +358,7 @@
             userModal.one('show.bs.modal', function(event) {
                 var tr = $(el).closest("tr");
                 var selectedUser = $('#table-users').DataTable().row(tr).data();
+                selectedUser['dateOfBirth'] = formatDate(selectedUser['dateOfBirth']);
 
                 $("#userForm").find("input").val(function(index, value) {
                     return selectedUser[this.name];
@@ -901,7 +902,10 @@
                         data: 'placeOfBirth'
                     },
                     {
-                        data: 'dateOfBirth'
+                        data: 'dateOfBirth',
+                        render: function(data, type, row, meta) {
+                            return formatDate(data);
+                        }
                     },
                     {
                         data: 'actions',

@@ -264,7 +264,7 @@
             const sendDeleteRequest = function(id) {
                 $.ajax({
                     type: 'DELETE',
-                    url: `/api/module/team/1/products/${id}`,
+                    url: `/rest/module/team/1/products/${id}`,
                     success: function() {
                         $('#table-products').DataTable().ajax.reload();
                         Toast.fire({
@@ -307,7 +307,7 @@
             const sendDeleteRequest = function(id) {
                 $.ajax({
                     type: 'DELETE',
-                    url: `/api/module/team/1/users/${id}`,
+                    url: `/rest/module/team/1/users/${id}`,
                     success: function() {
                         $('#table-users').DataTable().ajax.reload();
                         Toast.fire({
@@ -373,7 +373,7 @@
                     }
                 },
                 ajax: {
-                    url: '/api/module/team/1/products',
+                    url: '/rest/module/team/1/products',
                     dataSrc: function(json) {
                         const data = [];
                         json.data.forEach(item => {
@@ -459,7 +459,7 @@
                     }
                 },
                 ajax: {
-                    url: '/api/module/team/1/users',
+                    url: '/rest/module/team/1/users',
                     dataSrc: function(json) {
                         const data = [];
                         json.data.forEach(item => {

@@ -232,6 +232,10 @@
         integrity="sha512-4+OQqM/O4AkUlCzcn4hcNN7nFwYTYiuMQlhPjdi0Vcpn2ALkrIStJZkxCNauh9WiY6Fkc0FbelhU13feOuX5/A=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        var activeTab = null;
+        if (activeTab = localStorage.getItem('activeTab')) {
+            (new bootstrap.Tab($(`button.nav-link#${activeTab}`))).show();
+        }
         function formatDate(date) {
             var d = new Date(date),
                 month = '' + (d.getMonth() + 1),
@@ -658,6 +662,10 @@
             $.extend($.fn.dataTable.defaults, {
                 searching: false,
                 ordering: false,
+            });
+
+            $('button.nav-link').on('show.bs.tab', function () {
+                localStorage.setItem('activeTab', this.id);
             });
 
             $("#productForm").submit(function(event) {

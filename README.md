@@ -26,7 +26,7 @@ composer install
 Setup your environment variables
 
 ```bash
-cp .env.dist .env
+cp .env.example .env
 ```
 
 Run migration

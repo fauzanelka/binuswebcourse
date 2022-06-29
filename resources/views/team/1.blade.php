@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Team Assignment 1</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css"
         integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -194,6 +195,15 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="role" class="form-label">Role</label>
+                                        <select name="role" class="form-select">
+                                            @foreach ($roleList as $role)
+                                            <option value="{{ $role }}">{{ ucwords($role) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
@@ -248,6 +258,46 @@
             showConfirmButton: false,
             timer: 3000
         });
+
+        function viewProduct(el) {
+            var productModal = $("#productModal");
+            productModal.one('show.bs.modal', function(event) {
+                var tr = $(el).closest("tr");
+                var selectedProduct = $('#table-products').DataTable().row(tr).data();
+
+                $("#productForm").find("input").val(function(index, value) {
+                    return selectedProduct[this.name];
+                });
+
+                $("#productForm").find("input").each(function(_, el) {
+                    $(el).prop('disabled', true)
+                });
+
+                $(`#productForm textarea[name="description"]`).val(selectedProduct['description']);
+                $(`#productForm textarea[name="description"]`).prop('disabled', true);
+
+                $("#productModalLabel").text("View Product");
+                $(`#productForm input[name="image"]`).closest("div.mb-3").hide();
+                $(`#productForm button[type="submit"]`).hide();
+
+                $("#productForm").removeData("validator");
+                $("#productForm").off(".validate");
+            });
+
+            productModal.one('hidden.bs.modal', function(event) {
+                $("#productModalLabel").text("Add Product");
+                $(`#productForm button[type="submit"]`).text("Submit");
+                $(`#productForm input`).each(function(_, el) {
+                    $(el).removeAttr('disabled');
+                });
+                $(`#productForm textarea[name="description"]`).removeAttr('disabled');
+                $(`#productForm input[name="image"]`).closest("div.mb-3").show();
+                $(`#productForm button[type="submit"]`).show();
+                $('#productForm').trigger('reset');
+            });
+
+            (new bootstrap.Modal(productModal)).show();
+        }
 
         function editProduct(el) {
             var productModal = $("#productModal");
@@ -305,6 +355,9 @@
                         $.ajax({
                             type: "POST",
                             url: `/rest/module/team/1/products/${selectedProduct['id']}`,
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
                             data: formData,
                             processData: false,
                             contentType: false,
@@ -353,6 +406,54 @@
             (new bootstrap.Modal(productModal)).show();
         }
 
+        function viewUser(el) {
+            var userModal = $("#userModal");
+            userModal.one('show.bs.modal', function(event) {
+                var tr = $(el).closest("tr");
+                var selectedUser = $('#table-users').DataTable().row(tr).data();
+                selectedUser['dateOfBirth'] = formatDate(selectedUser['dateOfBirth']);
+
+                $("#userForm").find("input").val(function(index, value) {
+                    return selectedUser[this.name];
+                });
+
+                $(`#userForm select[name="gender"]`).val(selectedUser['gender']);
+                $(`#userForm select[name="role"]`).val(selectedUser['role']);
+
+                $("#userForm").find("input").each(function(_, el) {
+                    $(el).prop("disabled", true);
+                });
+
+                $(`#userForm select`).prop('disabled', true);
+
+                $("#userModalLabel").text("View User");
+                $(`#userForm button[type="submit"]`).hide();
+                $(`#userForm input[name="password"]`).closest("div.row").hide();
+
+                $("#userForm").removeData("validator");
+                $("#userForm").off(".validate");
+            });
+            userModal.one('hidden.bs.modal', function(event) {
+                $("#userModalLabel").text("Add User");
+                $(`#userForm button[type="submit"]`).text("Submit");
+
+                $("#userForm").find("input").each(function(_, el) {
+                    $(el).removeAttr("disabled");
+                });
+
+                $(`#userForm select`).removeAttr('disabled');
+
+                $(`#userForm input[name="password"]`).closest("div.row").show();
+                $(`#userForm button[type="submit"]`).show();
+                $('#userForm').trigger('reset');
+                $('#userForm .form-control').each(function() {
+                    $(this).removeClass('is-invalid');
+                });
+            });
+
+            (new bootstrap.Modal(userModal)).show();
+        }
+
         function editUser(el) {
             var userModal = $("#userModal");
             userModal.one('show.bs.modal', function(event) {
@@ -364,10 +465,12 @@
                     return selectedUser[this.name];
                 });
 
+                $(`#userForm select[name="gender"]`).val(selectedUser['gender']);
+                $(`#userForm select[name="role"]`).val(selectedUser['role']);
+
                 $("#userModalLabel").text("Edit User");
                 $(`#userForm button[type="submit"]`).text("Save");
                 $(`#userForm input[name="email"]`).prop("disabled", true);
-                $(`#userForm input[name="email"]`).closest("div").hide();
                 $(`#userForm input[name="password"]`).prop("disabled", true);
                 $(`#userForm input[name="password_confirmation"]`).prop("disabled", true);
                 $(`#userForm input[name="password"]`).closest("div.row").hide();
@@ -406,6 +509,9 @@
                             type: "PATCH",
                             url: `/rest/module/team/1/users/${selectedUser['id']}`,
                             data: $(form).serialize(),
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
                             beforeSend: function(xhr) {
                                 $("#userForm button[type=submit]").prop(
                                     "disabled", true);
@@ -443,7 +549,6 @@
                 $("#userModalLabel").text("Add User");
                 $(`#userForm button[type="submit"]`).text("Submit");
                 $(`#userForm input[name="email"]`).removeAttr("disabled");
-                $(`#userForm input[name="email"]`).closest("div").show();
                 $(`#userForm input[name="password"]`).removeAttr("disabled");
                 $(`#userForm input[name="password_confirmation"]`).removeAttr("disabled");
                 $(`#userForm input[name="password"]`).closest("div.row").show();
@@ -461,6 +566,9 @@
                 $.ajax({
                     type: 'DELETE',
                     url: `/rest/module/team/1/products/${id}`,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function() {
                         $('#table-products').DataTable().ajax.reload();
                         Toast.fire({
@@ -504,6 +612,9 @@
                 $.ajax({
                     type: 'DELETE',
                     url: `/rest/module/team/1/users/${id}`,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function() {
                         $('#table-users').DataTable().ajax.reload();
                         Toast.fire({
@@ -563,6 +674,7 @@
                 serverSide: true,
                 stateSave: true,
                 dom: 'Blfrtip',
+                @can('product.create')
                 buttons: {
                     buttons: [{
                         text: '<i class="fa-solid fa-plus"></i>',
@@ -614,6 +726,9 @@
                                             type: "POST",
                                             url: "/rest/module/team/1/products",
                                             data: formData,
+                                            headers: {
+                                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                            },
                                             processData: false,
                                             contentType: false,
                                             beforeSend: function(
@@ -635,7 +750,7 @@
                                                 $("#productForm")
                                                     .trigger(
                                                         "reset"
-                                                        );
+                                                    );
                                                 $('#table-products')
                                                     .DataTable()
                                                     .ajax
@@ -655,7 +770,7 @@
                                                 $("#productForm button[type=submit]")
                                                     .html(
                                                         `Submit`
-                                                        );
+                                                    );
                                             }
                                         })
                                     }
@@ -677,6 +792,7 @@
                         }
                     }
                 },
+                @endcan
                 ajax: {
                     url: '/rest/module/team/1/products',
                     dataSrc: 'data',
@@ -729,12 +845,21 @@
                         render: function(data, type, row, meta) {
                             return `
                                     <div class="d-block">
+                                        @can('product.read')
+                                        <button type="button" onclick="viewProduct(this)" title="View" class="btn btn-sm btn-secondary">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                        @endcan
+                                        @can('product.update')
                                         <button type="button" onclick="editProduct(this)" title="Edit" class="btn btn-sm btn-primary">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
+                                        @endcan
+                                        @can('product.delete')
                                         <button type="button" onclick="deleteProduct(${row.id})" title="Delete" class="btn btn-sm btn-danger">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
+                                        @endcan
                                     </div>
                                 `;
                         }
@@ -746,6 +871,7 @@
                 serverSide: true,
                 stateSave: true,
                 dom: 'Blfrtip',
+                @can('user.create')
                 buttons: {
                     buttons: [{
                         text: '<i class="fa-solid fa-plus"></i>',
@@ -802,6 +928,9 @@
                                             url: "/rest/module/team/1/users",
                                             data: $(form)
                                                 .serialize(),
+                                            headers: {
+                                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                            },
                                             beforeSend: function(
                                                 xhr) {
                                                 $("#userForm button[type=submit]")
@@ -864,6 +993,7 @@
                         }
                     }
                 },
+                @endcan
                 ajax: {
                     url: '/rest/module/team/1/users',
                     dataSrc: 'data',
@@ -912,12 +1042,21 @@
                         render: function(data, type, row, meta) {
                             return `
                                     <div class="d-block">
+                                        @can('user.read')
+                                        <button type="button" onclick="viewUser(this)" title="View" class="btn btn-sm btn-secondary">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                        @endcan
+                                        @can('user.update')
                                         <button type="button" onclick="editUser(this)" title="Edit" class="btn btn-sm btn-primary">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
+                                        @endcan
+                                        @can('user.delete')
                                         <button type="button" onclick="deleteUser(${row.id})" title="Delete" class="btn btn-sm btn-danger">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
+                                        @endcan
                                     </div>
                                 `;
                         }

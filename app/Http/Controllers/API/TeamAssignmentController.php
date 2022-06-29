@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use App\Http\Resources\TeamAssignment\ProductCollection;
 use App\Http\Resources\TeamAssignment\UserCollection;
+use Illuminate\Support\Facades\Auth;
 
 class TeamAssignmentController extends Controller
 {
@@ -22,7 +23,7 @@ class TeamAssignmentController extends Controller
     public function users(Request $request)
     {
         $limit = $request->input('limit', 10);
-        return new UserCollection(User::whereNot('email', 'admin@binuswebcourse.vercel.app')->paginate($limit));
+        return new UserCollection(User::whereNotIn('email', ['admin@binuswebcourse.vercel.app', 'user@binuswebcourse.vercel.app'])->paginate($limit));
     }
 
     public function addProduct(Request $request)
@@ -91,11 +92,12 @@ class TeamAssignmentController extends Controller
             'gender' => ['required', 'in:male,female,other'],
             'placeOfBirth' => ['required', 'string', 'min:3'],
             'dateOfBirth' => ['required', 'date'],
+            'role' => ['required', 'in:admin,viewer'],
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
 
-        User::create($validated);
+        $user = User::create($validated);
 
         return response()->json(['message' => 'success']);
     }
@@ -108,8 +110,8 @@ class TeamAssignmentController extends Controller
             'gender' => ['nullable', 'in:male,female,other'],
             'placeOfBirth' => ['nullable', 'string', 'min:3'],
             'dateOfBirth' => ['nullable', 'date'],
+            'role' => ['required', 'in:admin,viewer'],
         ]);
-
 
         $user = User::whereId($id)->first();
         $user->fill($validated);
@@ -127,7 +129,7 @@ class TeamAssignmentController extends Controller
 
     public function deleteUser(Request $request, string $id)
     {
-        User::whereNot('email', 'admin@binuswebcourse.vercel.app')->whereId($id)->first()->delete();
+        User::whereNotIn('email', ['admin@binuswebcourse.vercel.app', 'user@binuswebcourse.vercel.app'])->whereId($id)->first()->delete();
 
         return response('', 204);
     }

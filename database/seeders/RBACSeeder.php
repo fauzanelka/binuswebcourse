@@ -55,16 +55,27 @@ class RBACSeeder extends Seeder
             'viewer' => $insertPermissions('viewer')
         ];
 
-        foreach ($permissionIdsByRole as $role => $permissionIds) {
-            $role = Role::create(['name' => $role]);
+        xdebug_break();
+        foreach ($permissionIdsByRole as $roleName => $permissionIds) {
+            $role = null;
+            if (!Role::whereName($roleName)->exists()) {
+                $role = Role::create(['name' => $roleName]);
+            } else {
+                $role = Role::whereName($roleName)->first();
+            }
 
-            DB::table('role_has_permissions')
-                ->insert(
-                    collect($permissionIds)->map(fn ($id) => [
+            collect($permissionIds)->each(function ($id) use ($role) {
+                if (!DB::table('role_has_permissions')
+                        ->whereRoleId($role->id)
+                        ->wherePermissionId($id)
+                        ->exists()
+                    ) {
+                    DB::table('role_has_permissions')->insert([
                         'role_id' => $role->id,
                         'permission_id' => $id
-                    ])->toArray()
-                );
+                    ]);
+                }
+            });
         }
     }
 }

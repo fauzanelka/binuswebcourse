@@ -55,7 +55,6 @@ class RBACSeeder extends Seeder
             'viewer' => $insertPermissions('viewer')
         ];
 
-        xdebug_break();
         foreach ($permissionIdsByRole as $roleName => $permissionIds) {
             $role = null;
             if (!Role::whereName($roleName)->exists()) {

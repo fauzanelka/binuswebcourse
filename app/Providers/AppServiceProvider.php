@@ -27,8 +27,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         if (env('MIGRATE_ON_STARTUP', TRUE)) {
-            touch('/tmp/database.db');
-            Artisan::call('migrate', ['--force' => true, '--seed' => true]);
+            if (file_exists(base_path() . '/database.db')) {
+                copy(base_path() . '/database.db', '/tmp/database.db');
+            }
         }
     }
 }

@@ -17,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('path.public', function() {
             return base_path() . '/api';
         });
+
+        if ($this->app->environment() === 'local') {
+            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+        }
     }
 
     /**

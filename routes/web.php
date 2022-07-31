@@ -61,6 +61,11 @@ Route::get('/hello', function () {
 Route::prefix('auth')->group(function () {
     Route::get('/login', 'LoginController@index')->name('login');
     Route::post('/login', 'LoginController@authenticate');
+    Route::post('/login-captcha', 'LoginController@authenticate_captcha')->name('login-captcha');
+    Route::get('/forgot-password', 'LoginController@formForgotPassword')->name('forgot');
+    Route::post('/forgot-password', 'LoginController@forgotPassword');
+    Route::get('/reset-password', 'LoginController@formResetPassword')->name('reset');
+    Route::post('/reset-password', 'LoginController@resetPassword');
     Route::get('/logout', 'LoginController@logout');
 });
 

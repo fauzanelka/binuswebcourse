@@ -49,7 +49,9 @@ Open your browser and go to [http://localhost:8000](http://localhost:8000)
 
 Individual Assignment #1: `/module/personal/1`
 
-Individual Assignment #2: `/module/personal/2` (Not developed yet)
+Individual Assignment #2: `/module/personal/2` 
+
+Secret code: secret
 
 Team Assignment #1: `/module/team/1`
 
